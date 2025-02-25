@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2023",
     "module": "commonjs",
+    "moduleDetection": "force",
     "outDir": "./dist",
     "esModuleInterop": true,
     "strict": true,
