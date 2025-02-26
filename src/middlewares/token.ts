@@ -1,19 +1,20 @@
 //Gerar token ao fazer login
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { User } from '../models/validation';
+
 
 dotenv.config();
 
-const secret = process.env.HASHPASSWORD as string;
+const secret = 'secret_key_jwt';
 
-export const generateToken = (user: User) => {
-    const token = jwt.sign({ user: user.email , role: user.role}, secret, {
+export const generateToken = async (user: any) => {
+    const token = jwt.sign({ user }, secret, {
         expiresIn: '1h'
     })
+    return token;
 }
 
-export const verifyToken = (token: string) => {
+export const verifyToken = async(token: string) => {
     try {
         const decoded = jwt.verify(token, secret);
         return decoded;
@@ -21,3 +22,5 @@ export const verifyToken = (token: string) => {
         return null;
     }
 }
+
+exports = { generateToken, verifyToken}
