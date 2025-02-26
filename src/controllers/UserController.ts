@@ -1,55 +1,60 @@
 import { PrismaClient } from "@prisma/client";
-import { Handler, Request, Response, NextFunction } from "express";
-import { generateToken } from "../middlewares/token";
-import * as bcrypt from 'bcrypt';
+import {  Request, Response, NextFunction } from "express";
+import generateToken from "../middlewares/token";
+
+
+
 
 
 const Prisma = new PrismaClient();
 
 
-export class UserController {
-    createUser: Handler = (req: Request, res: Response, next: NextFunction) => {
+async function createUser(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { nome, email, senha, role } = req.body;
 
-        try {
-            const { nome, email, senha } = req.body;
-            const user = Prisma.usuario.create({
-                data: {
-                    id: Math.floor(Math.random() * 1000),
-                    nome,
-                    email,
-                    senha
-                }
-            });
-    
-            if (!nome || !email || !senha) {
-                res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
-            } else {
-                res.json(user);
-            }
-        } catch (error) {
-            next(error);
-        }
         
-    }
-
-    
-    loginUser: Handler = async (req: Request, res: Response, next: NextFunction) => {
-
-        try {
-            const { email, senha } = req.body;
-            const user = await Prisma.usuario.findUnique({where: {email, senha} });
-
-            if (!user){
-                res.status(401).json({ message: 'Usuário ou senha incorretos.'});
-            }else{
-                const token = generateToken(user);
-                res.json({ token });
-            }
-            
-
-        } catch (error) {
-           next(error); 
+        if (!nome || !email || !senha || !role) {
+             res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
         }
+
+        const user = await Prisma.usuario.create({
+            data: {
+                id: Math.floor(Math.random() * 1000),
+                nome,
+                email,
+                senha,
+                role
+            }
+        });
+
+        res.status(201).json(user);
+
+    } catch (error) {
+        next(error);
     }
-        
 }
+
+async function loginUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, senha } = req.body;
+      const user = await Prisma.usuario.findUnique({
+        where: {
+          email: email,
+          senha: senha,
+        },
+      });
+  
+      if (!user) {
+         res.status(401).json({ message: 'Credenciais inválidas' });
+      }
+  
+      const token = await generateToken(email, senha);
+  
+      res.status(200).json({  token });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+export {  createUser , loginUser};
