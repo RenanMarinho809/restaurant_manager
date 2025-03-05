@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import {  Request, Response, NextFunction } from "express";
 import generateToken from "../middlewares/token";
+import { HttpStatuscode } from "../utils/http-server";
 
 
 
@@ -15,7 +16,7 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
 
         
         if (!nome || !email || !senha || !role) {
-             res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+             res.status(HttpStatuscode.BadRequest).json({ error: 'Todos os campos são obrigatórios.' });
         }
 
         const user = await Prisma.usuario.create({
@@ -28,7 +29,7 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
             }
         });
 
-        res.status(201).json(user);
+        res.status(HttpStatuscode.Created).json(user);
 
     } catch (error) {
         next(error);
@@ -46,12 +47,12 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
       });
   
       if (!user) {
-         res.status(401).json({ message: 'Credenciais inválidas' });
+         res.status(HttpStatuscode.Unauthorized).json({ message: 'Credenciais inválidas' });
       }
   
       const token = await generateToken(email, senha);
   
-      res.status(200).json({  token });
+      res.status(HttpStatuscode.OK).json({  token });
     } catch (error) {
       next(error);
     }

@@ -1,12 +1,13 @@
 import {  Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
+import { HttpStatuscode } from "../utils/http-server";
 
 const Prisma = new PrismaClient();
 
 async function reservasList(req: Request, res: Response, next: NextFunction){
     try {
         const reservas = await Prisma.reserva.findMany();
-        res.status(200).json(reservas);
+        res.status(HttpStatuscode.OK).json(reservas);
     } catch (error) {
         next(error);
     }
@@ -19,7 +20,7 @@ async function createreserva(req: Request, res: Response, next: NextFunction) {
         const { usuario_id, mesa_id , data_reserva, status } = req.body;
 
         if(!usuario_id || !mesa_id || !data_reserva || !status){
-                res.status(400).json({ message: 'Todos os campos são obrigatórios.'});
+                res.status(HttpStatuscode.BadRequest).json({ message: 'Todos os campos são obrigatórios.'});
         }
 
         const reserva = await Prisma.reserva.create({
@@ -31,7 +32,7 @@ async function createreserva(req: Request, res: Response, next: NextFunction) {
                 status
             }
         });
-        res.status(201).json(reserva);
+        res.status(HttpStatuscode.Created).json(reserva);
      } catch (error) {
         next(error);
      }
@@ -47,7 +48,7 @@ async function cancelReserva(req: Request, res: Response, next: NextFunction) {
             }
         });
         
-        res.status(200).json({ message: 'Reserva deletada com sucesso' });
+        res.status(HttpStatuscode.OK).json({ message: 'Reserva deletada com sucesso' });
     } catch (error) {
         next(error);
     }

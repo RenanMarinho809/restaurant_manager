@@ -1,5 +1,6 @@
 import {  Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
+import { HttpStatuscode } from "../utils/http-server";
 
 
 const Prisma = new PrismaClient();
@@ -7,7 +8,7 @@ const Prisma = new PrismaClient();
 async function getAllTables(req: Request, res: Response, next: NextFunction){
     try {
         const tables = await Prisma.mesa.findMany();
-        res.status(200).json(tables);
+        res.status(HttpStatuscode.OK).json(tables);
     } catch (error) {
         next(error);
     }
@@ -18,7 +19,7 @@ async function tableRegister(req: Request, res: Response, next: NextFunction){
         const { nome, capacidade , status } = req.body;
 
         if(!nome || !capacidade || !status){
-            res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+            res.status(HttpStatuscode.BadRequest).json({ error: 'Todos os campos são obrigatórios.' });
         }
 
         const table = await Prisma.mesa.create({
@@ -30,7 +31,7 @@ async function tableRegister(req: Request, res: Response, next: NextFunction){
             }
         });
 
-        res.status(201).json(table);
+        res.status(HttpStatuscode.Created).json(table);
     } catch (error) {
         next(error); 
     }
@@ -51,7 +52,7 @@ async function updateTable(req: Request, res: Response, next: NextFunction){
                 status
             }
         });
-        res.status(200).json(table);
+        res.status(HttpStatuscode.OK).json(table);
     } catch (error) {
         next(error);
     }
@@ -65,7 +66,7 @@ async function deleteTable(req: Request, res: Response, next: NextFunction){
                 id: Number(id)
             }
         })
-        res.status(200).json({ message: 'Mesa deletada com sucesso'});
+        res.status(HttpStatuscode.OK).json({ message: 'Mesa deletada com sucesso'});
     } catch (error) {
         next(error);
     }
