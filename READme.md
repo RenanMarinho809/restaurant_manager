@@ -27,7 +27,7 @@ Desenvolver uma API RESTful para:
 - **Node.js** com Express
 - **PostgreSQL** + Prisma ORM
 - **JWT** para autenticação
-- **Docker** para facilitar a configuração do ambiente
+
 
 ---
 
@@ -82,7 +82,7 @@ A API utiliza **JWT** para autenticação e autorização, garantindo que apenas
 ### 📅 Reservas
 - **POST** `/reservas` — Cria uma nova reserva, validando disponibilidade e capacidade da mesa.
 - **GET** `/reservas` — Lista todas as reservas do usuário autenticado.
-- **PATCH** `/reservas/:id/cancelar` — Cancela uma reserva ativa.
+- **DELETE** `/reservas/:id/cancelar` — Cancela uma reserva ativa.
 
 ---
 
